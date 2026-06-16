@@ -14,7 +14,7 @@ window.DEDALE_CONFIG = {
       name: "Porte-Machine",
       type: "temporal", // 'temporal' | 'room' | 'locked' | 'exit'
       folder: "portemachine", // sous-dossier
-      redirectUrl: "https://sterenna.fr/base/steam/decrytpeur/portemachine",
+      redirectUrl: "https://nitro.sterenna.fr/dedale/portemachine/",
       requireCode: true,
       validCodes: ["portemachine", "porte machine"],
       placeholder: "Entrez le nom de la « porte-temporelle »...",
