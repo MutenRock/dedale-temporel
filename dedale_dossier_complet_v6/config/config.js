@@ -281,9 +281,9 @@ sera consignée dans le journal des paradoxes.`,
       type: "room",
       folder: "admin",
       redirectUrl: "admin/admin.html",
-      requireCode: true,
-      validCodes: ["56380"],
-      placeholder: "Entrez le code de contrôle d'accès (agents autorisés uniquement)…",
+      requireCode: false,
+      validCodes: [],
+      placeholder: "Accès réservé aux superusers Supabase — utilisez le bouton d'entrée…",
       riddleTitle: "Couloir d'administration – Accès restreint",
       riddleText: `
 Ce couloir n'apparaît pas sur les plans officiels de l'agence.
