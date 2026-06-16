@@ -11,6 +11,7 @@ on:
       - "dedale_dossier_complet_v6/**"
       - "spectrocrypt_v1_vanilla/public/**"
       - "impirmerie_medical/med_imprimerie_puzzle_v7_8_1/**"
+      - "dedale_sfx_pack/sounds/**"
       - "deploy/**"
       - ".github/workflows/deploy-nitro.yml"
   workflow_dispatch:
@@ -24,6 +25,7 @@ env:
   CORRIDOR_SRC: dedale_dossier_complet_v6
   PORTEMACHINE_SRC: spectrocrypt_v1_vanilla/public
   RELIQUES_SRC: impirmerie_medical/med_imprimerie_puzzle_v7_8_1/med_imprimerie_puzzle_v7_6_2
+  SOUNDS_SRC: dedale_sfx_pack/sounds
 
 jobs:
   deploy:
@@ -40,6 +42,10 @@ jobs:
 
           # Couloir des portes (racine de /dedale/)
           cp -r "$CORRIDOR_SRC/." _site/
+
+          # Sons du couloir (référencés par index.html sous sounds/...)
+          mkdir -p _site/sounds
+          cp -r "$SOUNDS_SRC/." _site/sounds/
 
           # Porte-Machine -> SpectroCrypt
           mkdir -p _site/portemachine
