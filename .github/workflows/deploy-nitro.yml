@@ -1,19 +1,28 @@
 name: Deploy to Nitro
 
-# Déploie le couloir des portes temporelles sur
-# https://nitro.sterenna.fr/dedale/ via rsync SSH (convention Nitro apps).
+# Assemble le couloir des portes temporelles + le contenu des salles
+# dans un seul arbre, puis le déploie sur https://nitro.sterenna.fr/dedale/
+# via rsync SSH (convention Nitro apps).
 
 on:
   push:
     branches: [main]
     paths:
       - "dedale_dossier_complet_v6/**"
+      - "spectrocrypt_v1_vanilla/public/**"
+      - "impirmerie_medical/med_imprimerie_puzzle_v7_8_1/**"
       - ".github/workflows/deploy-nitro.yml"
   workflow_dispatch:
 
 concurrency:
   group: deploy-nitro
   cancel-in-progress: true
+
+env:
+  # Sources -> sous-chemins servis sous /dedale/
+  CORRIDOR_SRC: dedale_dossier_complet_v6
+  PORTEMACHINE_SRC: spectrocrypt_v1_vanilla/public
+  RELIQUES_SRC: impirmerie_medical/med_imprimerie_puzzle_v7_8_1/med_imprimerie_puzzle_v7_6_2
 
 jobs:
   deploy:
@@ -22,6 +31,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Assemble site tree
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site
+
+          # Couloir des portes (racine de /dedale/)
+          cp -r "$CORRIDOR_SRC/." _site/
+
+          # Porte-Machine -> SpectroCrypt
+          mkdir -p _site/portemachine
+          cp -r "$PORTEMACHINE_SRC/." _site/portemachine/
+
+          # Atelier des Reliques -> Imprimerie Médicale
+          mkdir -p _site/reliques
+          cp -r "$RELIQUES_SRC/." _site/reliques/
+
+          echo "----- arbre assemblé -----"
+          find _site -maxdepth 2 -type d | sort
+
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -29,11 +58,11 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "${{ secrets.OVH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Deploy corridor via rsync
+      - name: Deploy via rsync
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes" \
-            dedale_dossier_complet_v6/ \
+            _site/ \
             "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/dedale/"
 
       - name: Cleanup
